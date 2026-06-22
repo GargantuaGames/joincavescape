@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Join Cavescape</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (function () {
+      var relayCodePattern = /^[6789BCDFGHJKLMNPQRTWbcdfghjklmnpqrtw]{6,12}$/;
+
+      function readJoinCode() {
+        var params = new URLSearchParams(window.location.search);
+        var code = (params.get("code") || "").trim();
+        if (relayCodePattern.test(code))
+          return code;
+
+        var path = window.location.pathname.replace(/^\/+|\/+$/g, "");
+        if (!path || path.toLowerCase() === "index.html" || path.toLowerCase() === "invite.html")
+          return "";
+
+        var segment = path.split("/").pop().trim();
+        return relayCodePattern.test(segment) ? segment : "";
+      }
+
+      var code = readJoinCode();
+      if (!code) {
+        document.addEventListener("DOMContentLoaded", function () {
+          document.body.innerHTML =
+            "<h1>Invalid join link</h1>" +
+            "<p>Ask the host for a new invite link.</p>";
+        });
+        return;
+      }
+
+      var steam =
+        "steam://run/3094540//+joinrelay%20" + encodeURIComponent(code);
+
+      document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("manual").href = steam;
+        document.getElementById("code").textContent = code;
+      });
+
+      window.location.replace(steam);
+    })();
+  </script>
+</head>
+<body>
+  <p>Opening Cavescape...</p>
+  <p>If nothing happens, <a id="manual" href="#">click here</a>.</p>
+  <p>Or paste this code in-game: <strong id="code"></strong></p>
+</body>
+</html>
